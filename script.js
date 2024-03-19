@@ -1,44 +1,35 @@
-let profilePic = document.getElementById("profile-pic");
-let inputFile = document.getElementById("input-file");
-let fileSizeSpan = document.getElementById("file-size");
-let progressBar = document.getElementById("gradient-bar");
-let leftMB = document.getElementById("gb-left");
+const inputFile = document.getElementById("input-file");
+const conversiontoMB = 1024 * 1024;
 
 function checkFileExtension(fileInput) {
-    let allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+    const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
     if (!allowedExtensions.exec(fileInput.name)) {
         alert('Error: Please upload an image file (jpg, jpeg, png, gif)');
-        fileInput.value = '';
         return false;
     }
     return true;
 }
 
-inputFile.onchange = function(){
-    if (!checkFileExtension(inputFile.files[0])) {
+inputFile.addEventListener('change', function() {
+    if (!checkFileExtension(this.files[0])) {
         return;
     }
-    let fileSizeInMB = inputFile.files[0].size/(1024*1024);
-    if (fileSizeInMB>100)
-    {
+    const fileSizeInMB = this.files[0].size / conversiontoMB;
+    const fileSizeSpan = document.getElementById("file-size");
+
+    if (fileSizeInMB > 100 || !this.files[0]) {
         alert("You've passed the limit. Image size up to 100MB");
-        inputFile.value = '';
-        fileSizeSpan.innerHTML = "0MB"
-    }
-    else{
-        profilePic.src = URL.createObjectURL(inputFile.files[0]);
-        fileSizeSpan.innerHTML = fileSizeInMB.toFixed(2)+"MB";
-        left = 100 - fileSizeInMB ; 
-        leftMB.innerHTML = left.toFixed(2);
-        const usagePercentage = fileSizeInMB;
-        const progressBar = document.querySelector('.gradient-bar');
-        progressBar.style.width = `${usagePercentage}%`;
+        this.value = '';
+        fileSizeSpan.innerHTML = "0MB";
+        return;
     }
 
-}
+    document.getElementById("uploadedPic").src = URL.createObjectURL(this.files[0]);
+    fileSizeSpan.innerHTML = fileSizeInMB.toFixed(2) + "MB";
+    const left = 100 - fileSizeInMB;
+    document.getElementById("gb-left").innerHTML = left.toFixed(2);
 
-document.getElementById('input-file').addEventListener('change', function() {
-    checkFileExtension(this.files[0]); 
+    const usagePercentage = fileSizeInMB;
+    const progressBar = document.querySelector('.gradient-bar');
+    progressBar.style.width = `${usagePercentage}%`;
 });
-
-
